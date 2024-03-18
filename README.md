@@ -4,6 +4,10 @@ A new Flutter project.
 
 ## Getting Started
 
+1. flutter emulators --launch Android_14.0_x86_64
+2. flutter run
+3. click the Power button.
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
