@@ -63,4 +63,33 @@ class AuthMethods {
     }
     return res;
   }
+
+  // log in user 로그인
+  Future<String> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    String res = "Some error occurred";
+
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        res = "success";
+      } else {
+        res = "Please enter all the fields";
+      }
+    } on FirebaseAuthException catch (error) {
+      // 유저가 존재하지 않을 경우 에러메시지 반환
+      if (error.code == 'user-not-found') {
+        res = 'The user does not exist.';
+        // 비밀번호가 일치하지 않을 경우 에러메시지 반환
+      } else if (error.code == 'wrong-password') {
+        res = 'The password does not match.';
+      }
+    } catch (error) {
+      res = error.toString();
+    }
+    return res;
+  }
 }

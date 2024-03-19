@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram_flutter/resources/auth_method.dart';
+import 'package:instagram_flutter/screen/home_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart'; // TextFieldInput
 
 class LoginScreen extends StatefulWidget {
@@ -13,11 +16,39 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false; // 어떤 작업을 수행하는 동안 사용자에게 로딩 상태를 표시 (디폴트값 false)
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+  }
+
+  void loginUser() async {
+    setState(() {
+      // 화면이 로딩 중임을 나타내고, 그에 따라 사용자 인터페이스는 로딩 상태에 맞게 변경됨
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+        email: _emailController.text, password: _passwordController.text);
+
+    setState(() {
+      // 로딩종료
+      _isLoading = false;
+    });
+
+    if (res == 'success') {
+      // 로그인 성공 (HomeScreen으로 이동)
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()));
+    } else {
+      // 로그인 실패
+
+      showSnackBar(res, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -68,9 +99,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // button login
               InkWell(
-                onTap: () {},
+                onTap: loginUser,
                 child: Container(
-                  child: const Text('Log in'),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        )
+                      : const Text('Log in'),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),

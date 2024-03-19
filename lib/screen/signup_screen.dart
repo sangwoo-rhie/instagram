@@ -20,7 +20,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
-  bool _isLoading = false; // 어떤 작업을 수행하는 동안 사용자에게 로딩 상태를 표시
+  bool _isLoading = false; // 어떤 작업을 수행하는 동안 사용자에게 로딩 상태를 표시 (디폴트값 false)
 
   @override
   void dispose() {
@@ -58,9 +58,15 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     if (res != 'success') {
+      setState(() {
+        _isLoading = false;
+      });
       // 회원가입에 실패했을 경우, 메시지 보여줌
       showSnackBar(res, context);
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
