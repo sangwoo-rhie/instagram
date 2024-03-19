@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_app_id">1:692453056588:android:55a49f778fd790f55154e9</string>
+    <string name="gcm_defaultSenderId"></string>
+    <string name="default_web_client_id">692453056588-ct7rjns44nkjhsgde5v16eqagdru9dmh.apps.googleusercontent.com</string>
+    <string name="ga_trackingId"></string>
+    <string name="firebase_database_url"></string>
+    <string name="google_api_key">AIzaSyBQJ-pBq2sa6TmByhb3DqMKDBLLUClW044</string>
+    <string name="google_crash_reporting_api_key"></string>
+    <string name="project_id">instagram-b19c2</string>
+</resources>
+
+<!-- 구글 설정 -->
+<!-- https://firebase.google.com/docs/auth/android/google-signin?hl=ko&authuser=0&_gl=1*1x9wyv1*_ga*MTcwMjUzODQyNS4xNzEwNzMzNDQ4*_ga_CW55HF8NVT*MTcxMDgyNjM2MC41LjEuMTcxMDgyNjkzNy4xMy4wLjA. -->

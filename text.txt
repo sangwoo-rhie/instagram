@@ -1,0 +1,14 @@
+# 앱(Android App) 실행 순서
+1. flutter emulators --launch Android_14.0_x86_64
+2. flutter run
+3. 화면에 나타난 모바일 화면의 전원버튼 누르기.
+
+# 웹(Web) 실행 순서
+1. flutter run -d chrome
+
+# 의존성 다운로드
+flutter pub get
+flutter run
+
+Android 앱을 빌드하기 전에 필요한 경우 Android 관련 설정을 확인하고 업데이트해야 할 수도 있습니다. 예를 들어, Android Studio에서 프로젝트를 열고 Gradle 동기화를 수행하는 것이 좋습니다. 
+이는 Android Studio의 오른쪽 상단에 있는 Sync Project with Gradle Files 버튼을 클릭하여 수행할 수 있습니다.
