@@ -6,6 +6,8 @@
 # 웹(Web) 실행 순서
 1. flutter run -d chrome
 
+flutter run -d chrome --web-renderer html
+
 # 의존성 다운로드
 flutter pub get
 flutter run

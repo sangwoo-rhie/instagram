@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_flutter/resources/auth_method.dart';
+import 'package:instagram_flutter/responsive/mobile_screen_layout.dart';
+import 'package:instagram_flutter/responsive/responsive_layout_screen.dart';
+import 'package:instagram_flutter/responsive/web_screen_layout.dart';
 import 'package:instagram_flutter/screen/home_screen.dart';
+import 'package:instagram_flutter/screen/signup_screen.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_field_input.dart'; // TextFieldInput
@@ -38,17 +42,25 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (res == 'success') {
-      // 로그인 성공 (HomeScreen으로 이동)
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()));
+      // 로그인 성공시 페이지 이동
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+                mobileScreenLayout: MobileScreenLayout(),
+                webScreenLayout: WebScreenLayout(),
+              )));
     } else {
       // 로그인 실패
-
       showSnackBar(res, context);
     }
     setState(() {
       _isLoading = false;
     });
+  }
+
+// 회원가입 페이지로 이동
+  void navigateToSignup() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const SignupScreen()));
   }
 
   @override
@@ -134,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToSignup, // 회원가입 페이지로 이동
                     child: Container(
                       child: const Text(
                         "Sign Up.",
