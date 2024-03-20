@@ -1,13 +1,29 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:instagram_flutter/models/user.dart';
+import 'package:instagram_flutter/providers/user_provider.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final snap;
   const PostCard({Key? key, required this.snap}) : super(key: key);
 
   @override
+  State<PostCard>
+}
+
+class _PostCardState extends State<PostCard> {
+
+  bool isLikeAnimating = false;
+
+  @override
   Widget build(BuildContext context) {
+    final User? user = Provider.of<UserProvider>(context).getUser;
+
     return Container(
       color: mobileBackgroundColor,
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -23,7 +39,7 @@ class PostCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(snap['profileImage']),
+                  backgroundImage: NetworkImage(widget.snap['profileImage']),
                 ),
                 Expanded(
                     child: Padding(
@@ -33,7 +49,7 @@ class PostCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              snap['username'],
+                              widget.snap['username'],
                               style: TextStyle(fontWeight: FontWeight.bold),
                             )
                           ],
@@ -68,25 +84,55 @@ class PostCard extends StatelessWidget {
           ),
 
           // IMAGE SECTION
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.35,
-            width: double.infinity,
-            child: Image.network(
-              snap['postUrl'],
-              fit: BoxFit.cover,
+          GestureDetector(
+            // 더블탭 누르면 좋아요
+            onDoubleTap : () {
+              setState(() {
+                isLikeAnimating = true;
+              });
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.35,
+              width: double.infinity,
+              child: Image.network(
+                widget.snap['postUrl'],
+                fit: BoxFit.cover,
+              ),
             ),
+            // boolean상태에 따라 결과를 다르게 보여줌
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: isLikeAnimating ? 1 : 0,
+              child: LikeAnimation(
+                child: const Icon(Icons.favorite, color: Colors.white, size: 120),
+                isAnimating: isLikeAnimating,
+                duration: const Duration(milliseconds: 400),
+                onEnd: () {
+                  setState(() {
+                    isLikeAnimating = false;
+                  });
+                },
+                ),)
+          ]),
           ),
 
           // LIKE COMMENT SECTION
           Row(
             children: [
-              // Like 버튼
-              IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.favorite,
-                    color: Colors.red,
-                  )),
+              LikeAnimation(
+                // Like 버튼
+                isAnimating: widget.snap['likes'].contains(user!.uid),
+                smallLike: true,
+                child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                    )),
+              ),
               // Comment 버튼
               IconButton(
                   onPressed: () {},
@@ -124,7 +170,7 @@ class PostCard extends StatelessWidget {
                         .textTheme
                         .subtitle2!
                         .copyWith(fontWeight: FontWeight.w800),
-                    child: Text('${snap['likes'].length} likes',
+                    child: Text('${widget.snap['likes'].length} likes',
                         style: Theme.of(context).textTheme.bodyText2)),
                 Container(
                     width: double.infinity,
@@ -136,11 +182,11 @@ class PostCard extends StatelessWidget {
                           style: const TextStyle(color: primaryColor),
                           children: [
                             TextSpan(
-                                text: snap['username'],
+                                text: widget.snap['username'],
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold)),
                             TextSpan(
-                              text: ' ${snap['description']}',
+                              text: ' ${widget.snap['description']}',
                             )
                           ]),
                     )),
@@ -158,7 +204,7 @@ class PostCard extends StatelessWidget {
                   child: Text(
                     // datePublished는 timestamp형태이기 때문에 아래와 같이 함
                     DateFormat.yMMMd().format(
-                      snap['datePublished'].toDate(),
+                      widget.snap['datePublished'].toDate(),
                     ),
                     style: const TextStyle(fontSize: 16, color: secondaryColor),
                   ),
@@ -171,3 +217,6 @@ class PostCard extends StatelessWidget {
     );
   }
 }
+
+
+
