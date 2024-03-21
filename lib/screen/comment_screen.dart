@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:instagram_flutter/models/user.dart';
@@ -30,13 +31,31 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
     final User? user = Provider.of<UserProvider>(context).getUser;
 
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor, 
         title: const Text("Comments"),
         centerTitle: false,),
-        body: CommentCard(), // Comment Widget에서 가져옴
+        body: // 
+          StreamBuilder(stream: FirebaseFirestore.instance
+          .collection('posts')
+          .doc(widget.snap['postId'])
+          .collection('comments')
+          .snapshots(),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator(),
+              );
+            }
+            return ListView.builder(
+              itemCount: (snapshot.data! as dynamic).docs.length,
+              itemBuilder: (context, index) => CommentCard(
+                snap: (snapshot.data as dynamic).docs[index].data()
+              ), // Comment Widget에서 가져옴,
+
+            );
+          },
+          ),
         bottomNavigationBar: SafeArea(
           child: Container(
             height: kToolbarHeight,
@@ -70,6 +89,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         user.username,
                         user.photoUrl,
                       );
+                      setState(() {
+                        _commentController.text = "";
+                      });
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
