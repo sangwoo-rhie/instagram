@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class CommentsScreen extends StatefulWidget {
   final snap;
-  const CommentsScreen({ Key? key, required this.snap }) : super(key:key);
+  const CommentsScreen({Key? key, required this.snap}) : super(key: key);
 
   @override
   _CommentsScreenState createState() => _CommentsScreenState();
@@ -18,7 +18,7 @@ class CommentsScreen extends StatefulWidget {
 
 // Comment 버튼을 누르고 들어왔을 떄 Comment 창
 class _CommentsScreenState extends State<CommentsScreen> {
-  final TextEditingController _commentController = TextEditingController()
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void dispose() {
@@ -28,81 +28,86 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final User? user = Provider.of<UserProvider>(context).getUser;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: mobileBackgroundColor, 
+        backgroundColor: mobileBackgroundColor,
         title: const Text("Comments"),
-        centerTitle: false,),
-        body: // 
-          StreamBuilder(stream: FirebaseFirestore.instance
-          .collection('posts')
-          .doc(widget.snap['postId'])
-          .collection('comments')
-          .snapshots(),
-          builder: (context, snapshot) {
-            if(snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(),
-              );
-            }
-            return ListView.builder(
-              itemCount: (snapshot.data! as dynamic).docs.length,
-              itemBuilder: (context, index) => CommentCard(
-                snap: (snapshot.data as dynamic).docs[index].data()
-              ), // Comment Widget에서 가져옴,
-
+        centerTitle: false,
+      ),
+      body: //
+          StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('posts')
+            .doc(widget.snap['postId'])
+            .collection('comments')
+            .orderBy('datePublished', descending: true) // 댓글 시간에따른 순서
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          },
-          ),
-        bottomNavigationBar: SafeArea(
-          child: Container(
-            height: kToolbarHeight,
-            margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom
+          }
+          return ListView.builder(
+            itemCount: (snapshot.data! as dynamic).docs.length,
+            itemBuilder: (context, index) => CommentCard(
+                snap: (snapshot.data as dynamic)
+                    .docs[index]
+                    .data()), // Comment Widget에서 가져옴,
+          );
+        },
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: kToolbarHeight,
+          margin:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: const EdgeInsets.only(left: 16, right: 8),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(user!.photoUrl),
+                radius: 18,
               ),
-              padding: const EdgeInsets.only(left: 16, right: 8),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: 
-                    NetworkImage(user!.photoUrl),
-                    radius: 18,
-                  ),
-                  Expanded(
-                    child: Padding(padding: const EdgeInsets.only(left: 16, right: 8.0),
-                      child: TextField(
-                        controller: _commentController,
-                        decoration: InputDecoration(
-                        hintText: "Comment as ${user.username}",
-                        border: InputBorder.none,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 8.0),
+                  child: TextField(
+                    controller: _commentController,
+                    decoration: InputDecoration(
+                      hintText: "Comment as ${user.username}",
+                      border: InputBorder.none,
                     ),
-                  ),),
                   ),
-                  InkWell(
-                    onTap: () async {
-                      await FirestoreMethods().postComment(
-                        widget.snap('postId'),
-                        _commentController.text,
-                        user.uid,
-                        user.username,
-                        user.photoUrl,
-                      );
-                      setState(() {
-                        _commentController.text = "";
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 8,
-                      ),
-                      child: const Text('Post', style: TextStyle(color: blueColor)),
-                      ),
-                  )
-                ],),
-        ),),
-    )
+                ),
+              ),
+              InkWell(
+                onTap: () async {
+                  await FirestoreMethods().postComment(
+                    widget.snap('postId'),
+                    _commentController.text,
+                    user.uid,
+                    user.username,
+                    user.photoUrl,
+                  );
+                  setState(() {
+                    _commentController.text = "";
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 8,
+                  ),
+                  child: const Text('Post', style: TextStyle(color: blueColor)),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
