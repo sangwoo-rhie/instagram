@@ -10,6 +10,7 @@ flutter run -d chrome --web-renderer html
 
 # 의존성 다운로드
 flutter clean
+flutter pub get
 flutter pub outdated
 flutter pub get
 flutter run
