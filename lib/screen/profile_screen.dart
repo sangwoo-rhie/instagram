@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/resources/firestore_methods.dart';
 import 'package:instagram_flutter/utils/colors.dart';
 import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/follow_button.dart';
@@ -126,7 +127,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             backgroundColor: Colors.white,
                                             textColor: Colors.black,
                                             borderColor: Colors.grey,
-                                            function: () {},
+                                            function: () async {
+                                              await FirestoreMethods()
+                                                  .followUser(
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                                userData['uid'],
+                                              );
+                                              setState(() {
+                                                // 팔로우상태 false 및 팔로워 수 감소
+                                                isFollowing = false;
+                                                followers--;
+                                              });
+                                            },
                                           )
                                         :
                                         // 팔로우 버튼
@@ -135,7 +148,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             backgroundColor: Colors.blue,
                                             textColor: Colors.white,
                                             borderColor: Colors.blue,
-                                            function: () {},
+                                            function: () async {
+                                              await FirestoreMethods()
+                                                  .followUser(
+                                                FirebaseAuth
+                                                    .instance.currentUser!.uid,
+                                                userData['uid'],
+                                              );
+                                              setState(() {
+                                                // 팔로우상태 true 및 팔로워 수 증가
+                                                isFollowing = true;
+                                                followers++;
+                                              });
+                                            },
                                           )
                               ],
                             )
